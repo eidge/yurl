@@ -6,9 +6,14 @@
 
 ### Why not Curl?
 
-Curl is a great tool, but ends up having a complicated sintaxe for beginners and
-it doens't really solve the problem of saving requests for using later or
-actually reuse repeated parts such as the authentication headers.
+Curl is a great tool, but ends up having a complicated sintaxe, specially for
+beginners.
+
+Besides there's the problem of reusing repeated data such as authentication
+headers and saving requests to use later.
+
+**Yurl** lets you define requests in a simple and readable sintaxe, extract repeated
+data and save these to use later or share with fellow developers.
 
 ### Why Go?
 
