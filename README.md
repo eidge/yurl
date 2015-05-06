@@ -33,7 +33,8 @@ A yurl file can represent one or more HTTP Requests and respects the following
 format:
 
 ```yml
-# ./users_endpoint.yml
+# /home/example/users_endpoint.yml
+
 base_url: https://example.com
 headers: # headers to include for every request in this file
   AUTHENTICATION_TOKEN: 123456

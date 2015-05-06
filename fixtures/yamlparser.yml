@@ -1,0 +1,22 @@
+globals:
+  base_url: https://example.com
+  headers: # headers to include for every request in this file
+    AUTHENTICATION_TOKEN: "123456"
+
+requests:
+  example_post: # yurl users_endpoint create_user
+    path: /example_endpoint
+    method: POST
+    body_format: json # Can be one of: form_encoded|json|raw . Defaults to JSON
+    body:
+      first_name: John
+      last_name:  Doe
+    query_str:
+      format: json
+
+  example_get: # yurl users_endpoint users
+    path: /example_endpoint_2
+    method: GET
+    query_str:
+      age: 30
+      created_on: 30/02/1992
