@@ -12,26 +12,9 @@ import (
 )
 
 func main() {
-	cli.AppHelpTemplate = `{{.Name}} {{.Version}} - {{.Usage}}
+	app := newApp()
 
-  Usage:
-     {{.Name}} FILENAME REQUEST_NAME [options]
-  
-  Example
-     {{.Name}} users.yml get_users {{if len .Authors}}
-  
-  AUTHOR(S): 
-     {{range .Authors}}{{ . }}{{end}}{{end}}
-  
-  COMMANDS:
-     {{range .Commands}}{{join .Names ", "}}{{ "\t" }}{{.Usage}}
-     {{end}}{{if .Flags}}{{end}}
-`
-
-	app := cli.NewApp()
-	app.Name = "Yurl"
-	app.Usage = "API requests made simple"
-	app.Version = "0.1"
+	// Define default action
 	app.Action = func(c *cli.Context) {
 		if len(c.Args()) == 0 {
 			cli.ShowAppHelp(c)
@@ -44,9 +27,8 @@ func main() {
 			fmt.Printf("%v", config)
 		}
 	}
-	app.Author = "Hugo Ribeira"
-	app.Email = "hugoribeira@gmail.com"
 
+	// Define cli commands
 	app.Commands = []cli.Command{
 		{
 			Name:    "glu",
