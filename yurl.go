@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	//"log"
+	"github.com/eidge/yurl/config"
 	"os"
 )
 
@@ -35,7 +36,7 @@ func main() {
 		if len(c.Args()) == 0 {
 			cli.ShowAppHelp(c)
 		} else {
-			config, err := parseYaml(c.Args()[0])
+			config, err := config.FromYaml(c.Args()[0])
 			if err != nil {
 				fmt.Printf("%s\n", err)
 				return

@@ -1,21 +1,24 @@
-package main
+/*
+	Package config is responsible for reading and exposing configuration variables
+*/
+package config
 
 import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 )
 
-type RequestsConfig struct {
-	Globals  GlobalConfig
-	Requests map[string]Request
+type config struct {
+	Globals  globals
+	Requests map[string]request
 }
 
-type GlobalConfig struct {
+type globals struct {
 	BaseUrl string "base_url"
 	Headers map[string]string
 }
 
-type Request struct {
+type request struct {
 	Path        string
 	Method      string
 	BodyFormat  string            "body_format"
@@ -27,7 +30,7 @@ type Request struct {
 	parseYaml takes a path to the request yaml file and returns a map containing the
 	the configuration for the requests defined in that file.
 */
-func parseYaml(filename string) (config RequestsConfig, err error) {
+func FromYaml(filename string) (config config, err error) {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return
