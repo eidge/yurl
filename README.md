@@ -1,3 +1,5 @@
+**Notice:** *WIP, it does not work yet.*
+
 # Yurl
 
 **A simple tool to make and save API HTTP requests.**
