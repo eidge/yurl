@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/codegangsta/cli"
+	"github.com/eidge/yurl/config"
+	"os"
 )
 
 func newApp() *cli.App {
@@ -14,6 +17,33 @@ func newApp() *cli.App {
 
 	cli.AppHelpTemplate = appHelpTemplate()
 	return app
+}
+
+func actionMakeRequest(c *cli.Context) {
+	if len(c.Args()) == 1 {
+		fmt.Printf("No request provided. \n\n")
+		cli.ShowAppHelp(c)
+	} else if len(c.Args()) > 1 {
+		// Read config file
+		filename := c.Args()[0]
+		config, err := config.FromYaml(filename)
+		if err != nil {
+			fmt.Printf("%s\n", err)
+			os.Exit(-1)
+		}
+
+		// Find and make request
+		requestName := c.Args()[1]
+		requestConfig, ok := config.Requests[requestName]
+		if ok {
+			fmt.Printf("%#v", requestConfig)
+		} else {
+			fmt.Printf("Request %s not found in %s\n", requestName, filename)
+			os.Exit(-1)
+		}
+	} else {
+		cli.ShowAppHelp(c)
+	}
 }
 
 func appHelpTemplate() string {
