@@ -15,8 +15,15 @@ requests:
       format: json
 
   example_get: # yurl users_endpoint users
-    path: /example_endpoint_2
+    url: https://test.example.com/example_endpoint_2
     method: GET
     query_str:
       age: 30
       created_on: 30/02/1992
+    headers:
+      Accept-Encoding: application/json
+
+  override_auth_token:
+    headers:
+      AUTHENTICATION_TOKEN: overriden!
+      Accept-Encoding: application/json
