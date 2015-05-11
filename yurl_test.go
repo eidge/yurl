@@ -46,7 +46,7 @@ func TestYurlWithNonExistantFile(t *testing.T) {
 }
 
 func TestYurlWithNonExistantRequest(t *testing.T) {
-	yurl := startYurl("config/fixtures/yamlparser.yml request_name")
+	yurl := startYurl("config/fixtures/simple.yml request_name")
 	defer yurl.Close()
 
 	match, _ := yurl.ExpectRegex("not found")
@@ -54,9 +54,9 @@ func TestYurlWithNonExistantRequest(t *testing.T) {
 }
 
 func TestYurlWithValidArguments(t *testing.T) {
-	yurl := startYurl("config/fixtures/yamlparser.yml example_post")
+	yurl := startYurl("config/fixtures/simple.yml example_post")
 	defer yurl.Close()
 
-	match, _ := yurl.ExpectRegex("config.request")
+	match, _ := yurl.ExpectRegex("config.Request") // FIXME: Placeholder
 	expect.Equal(t, match, true)
 }

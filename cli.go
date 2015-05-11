@@ -26,7 +26,7 @@ func actionMakeRequest(c *cli.Context) {
 	} else if len(c.Args()) > 1 {
 		// Read config file
 		filename := c.Args()[0]
-		config, err := config.FromYaml(filename)
+		requests, err := config.RequestsFromYaml(filename)
 		if err != nil {
 			fmt.Printf("%s\n", err)
 			os.Exit(-1)
@@ -34,7 +34,7 @@ func actionMakeRequest(c *cli.Context) {
 
 		// Find and make request
 		requestName := c.Args()[1]
-		requestConfig, ok := config.Requests[requestName]
+		requestConfig, ok := requests[requestName]
 		if ok {
 			fmt.Printf("%#v", requestConfig)
 		} else {
