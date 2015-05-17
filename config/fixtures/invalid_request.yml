@@ -1,0 +1,19 @@
+globals:
+  base_url: https://example.com
+  headers: # headers to include for every request in this file
+    AUTHENTICATION_TOKEN: "123456"
+
+requests:
+  example_get: # yurl users_endpoint users
+    url: https://test.example.com/example_endpoint_2
+    method: GET
+    query_str:
+      age: 30
+      created_on: 30/02/1992
+    headers:
+      Accept-Encoding: application/json
+
+  invalid_request:
+    method: UPS
+    body_format: jsonas
+

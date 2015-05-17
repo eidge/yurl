@@ -27,3 +27,6 @@ requests:
     headers:
       AUTHENTICATION_TOKEN: overriden!
       Accept-Encoding: application/json
+
+  example_with_no_method_or_body_format:
+    path: /somewhere
