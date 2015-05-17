@@ -53,10 +53,18 @@ func TestYurlWithNonExistantRequest(t *testing.T) {
 	expect.Equal(t, match, true)
 }
 
+func TestYurlWithInvalidRequest(t *testing.T) {
+	yurl := startYurl("config/fixtures/invalid_request.yml request_name")
+	defer yurl.Close()
+
+	match, _ := yurl.ExpectRegex("Invalid request")
+	expect.Equal(t, match, true)
+}
+
 func TestYurlWithValidArguments(t *testing.T) {
 	yurl := startYurl("config/fixtures/simple.yml example_post")
 	defer yurl.Close()
 
-	match, _ := yurl.ExpectRegex("config.Request") // FIXME: Placeholder
+	match, _ := yurl.ExpectRegex("request.Request") // FIXME: Placeholder
 	expect.Equal(t, match, true)
 }

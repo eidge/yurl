@@ -1,15 +1,17 @@
 package config
 
 import (
+	"github.com/eidge/yurl/request"
 	"github.com/eidge/yurl/testing/expect"
 	"testing"
 )
 
-func readYaml(t *testing.T, filename string) map[string]Request {
+func readYaml(t *testing.T, filename string) map[string]request.Request {
 	requestsFile := filename
 	requests, err := RequestsFromYaml(requestsFile)
 	if err != nil {
-		t.Error("Yml parsing failed with error: %v", err)
+		t.Errorf("Yml parsing failed with error: %v", err)
+		return requests
 	}
 	return requests
 }
@@ -23,7 +25,7 @@ func TestRequestsFromYamlParsesYamlFile(t *testing.T) {
 	requests := readYaml(t, "./fixtures/simple.yml")
 
 	// Requests
-	expect.Equal(t, len(requests), 3)
+	expect.Equal(t, len(requests), 4)
 
 	expect.Equal(t, requests["example_post"].Path, "/example_endpoint")
 	expect.Equal(t, requests["example_post"].Method, "POST")
@@ -33,6 +35,12 @@ func TestRequestsFromYamlParsesYamlFile(t *testing.T) {
 	expect.Equal(t, requests["example_post"].Body["last_name"], "Doe")
 
 	expect.Equal(t, requests["example_post"].QueryString["format"], "json")
+}
+
+func TestRequestsFromYamlReturnsErrorIfRequestIsInvalid(t *testing.T) {
+	notExistentFile := "./fixtures/invalid_request.yml"
+	_, err := RequestsFromYaml(notExistentFile)
+	expect.Error(t, err)
 }
 
 func TestRequestsFromYamlSetsConfigurationFromGlobals(t *testing.T) {
@@ -62,4 +70,12 @@ func TestHeadersAreMergedWithGlobalsHeaders(t *testing.T) {
 
 	expect.Equal(t, requestWithAuthToken.Headers["Accept-Encoding"], "application/json")
 	expect.Equal(t, requestWithAuthToken.Headers["AUTHENTICATION_TOKEN"], "overriden!")
+}
+
+func TestSetDefaults(t *testing.T) {
+	requests := readYaml(t, "./fixtures/simple.yml")
+	request := requests["example_with_no_method_or_body_format"]
+
+	expect.Equal(t, request.BodyFormat, "json")
+	expect.Equal(t, request.Method, "GET")
 }
