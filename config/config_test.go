@@ -31,8 +31,9 @@ func TestRequestsFromYamlParsesYamlFile(t *testing.T) {
 	expect.Equal(t, requests["example_post"].Method, "POST")
 	expect.Equal(t, requests["example_post"].BodyFormat, "json")
 
-	expect.Equal(t, requests["example_post"].Body["first_name"], "John")
-	expect.Equal(t, requests["example_post"].Body["last_name"], "Doe")
+	body := requests["example_post"].Body.(map[interface{}]interface{})
+	expect.Equal(t, body["first_name"], "John")
+	expect.Equal(t, body["last_name"], "Doe")
 
 	expect.Equal(t, requests["example_post"].QueryString["format"], "json")
 }
