@@ -1,7 +1,25 @@
 package request
 
+import (
+	"bytes"
+	"errors"
+	"fmt"
+	"github.com/eidge/yurl/request/formatters"
+	"net/http"
+)
+
+var Formatters = make(map[string]Formatter)
+
+type Formatter interface {
+	Parse(interface{}) ([]byte, error)
+}
+
+func init() {
+	Formatters["raw"] = new(formatters.RawFormatter)
+	Formatters["json"] = new(formatters.JSONFormatter)
+}
+
 var allowedRequestTypes = []string{"GET", "POST", "PATCH", "HEAD", "PUT", "DELETE"}
-var allowedBodyFormats = []string{"json", "form", "raw"}
 
 type Request struct {
 	BaseUrl     string "base_url"
@@ -9,7 +27,7 @@ type Request struct {
 	BodyFormat  string "body_format"
 	Method      string
 	Url         string
-	Body        map[string]string // This should be an interface to respect yaml types!
+	Body        interface{}
 	Headers     map[string]string
 	QueryString map[string]string "query_str"
 }
@@ -18,38 +36,82 @@ func New() *Request {
 	return new(Request)
 }
 
+func (request *Request) Do() (*http.Response, error) {
+	if valid, err := request.IsValid(); !valid {
+		return nil, err
+	}
+
+	req, err := request.httpRequest()
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
 func (request Request) IsValid() (bool, error) {
 	err := newValidationError()
-	isValid := false
 
 	if request.Url == "" {
 		err.addExplanation("url", "cannot be blank")
 	}
 	if request.Method == "" {
 		err.addExplanation("method", "cannot be blank")
+	} else {
+		if !isStringInArray(request.Method, allowedRequestTypes) {
+			err.addExplanation("method", "is not allowed")
+		}
 	}
 	if request.BodyFormat == "" {
 		err.addExplanation("body_format", "cannot be blank")
-	}
-	if !isStringInArray(request.Method, allowedRequestTypes) {
-		err.addExplanation("method", "is not allowed")
-	}
-	if !isStringInArray(request.BodyFormat, allowedBodyFormats) {
-		err.addExplanation("body_format", "is not allowed")
+	} else {
+		if _, ok := Formatters[request.BodyFormat]; !ok {
+			err.addExplanation("body_format", "is not allowed")
+		}
 	}
 
 	if len(err.explanations) == 0 {
-		isValid = true
+		return true, nil
+	} else {
+		return false, err
 	}
-
-	return isValid, err
 }
 
-func isStringInArray(expectedValue string, array []string) bool {
-	for _, value := range array {
-		if value == expectedValue {
-			return true
-		}
+func (request *Request) httpRequest() (*http.Request, error) {
+	body, err := request.parseBody()
+	if err != nil {
+		return nil, err
 	}
-	return false
+
+	httpReq, err := http.NewRequest(request.Method, request.Url, body)
+	if err != nil {
+		return nil, err
+	}
+
+	for k, v := range request.Headers {
+		httpReq.Header.Set(k, v)
+	}
+
+	return httpReq, nil
+}
+
+func (request *Request) parseBody() (*bytes.Buffer, error) {
+	var parser Formatter
+	var ok bool
+
+	if parser, ok = Formatters[request.BodyFormat]; !ok {
+		return nil, errors.New(fmt.Sprintf("No parse for format: %s", request.BodyFormat))
+	}
+
+	body, err := parser.Parse(request.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes.NewBuffer(body), nil
 }

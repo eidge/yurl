@@ -53,7 +53,9 @@ func applyGlobals(request request.Request, globals request.Request) request.Requ
 		globalsField := globalsValue.Field(i)
 		newValue := firstNonZeroValue(requestField.Interface(), globalsField.Interface())
 
-		requestField.Set(newValue)
+		if newValue.IsValid() {
+			requestField.Set(newValue)
+		}
 	}
 
 	return request
@@ -76,6 +78,14 @@ func firstNonZeroValue(value interface{}, defaultValue interface{}) reflect.Valu
 		} else {
 			returnValue = value
 		}
+	case map[interface{}]interface{}:
+		if len(value.(map[interface{}]interface{})) == 0 {
+			returnValue = defaultValue
+		} else {
+			returnValue = value
+		}
+	case nil:
+		returnValue = defaultValue
 	default:
 		panic("Type not supported")
 	}
