@@ -4,14 +4,11 @@
 package config
 
 import (
-	"fmt"
 	"github.com/eidge/yurl/request"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"reflect"
 )
-
-var p = fmt.Printf // FIXME: Debug
 
 type config struct {
 	Globals  request.Request
