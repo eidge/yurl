@@ -1,5 +1,5 @@
 globals:
-  base_url: https://example.com
+  base_url: http://jsonplaceholder.typicode.com
   headers: # headers to include for every request in this file
     AUTHENTICATION_TOKEN: "123456"
 
@@ -11,8 +11,8 @@ requests:
       age: 30
       created_on: 30/02/1992
 
-  create_user: # yurl users_endpoint create_user
-    path: /users
+  create_post: # yurl users_endpoint create_user
+    path: /posts
     method: POST
     body_format: json # Can be one of: form_encoded|json|raw . Defaults to JSON
     body:

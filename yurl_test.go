@@ -1,8 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"github.com/ThomasRooney/gexpect"
 	"github.com/eidge/yurl/testing/expect"
+	"net"
+	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 )
@@ -62,9 +66,20 @@ func TestYurlWithInvalidRequest(t *testing.T) {
 }
 
 func TestYurlWithValidArguments(t *testing.T) {
-	yurl := startYurl("config/fixtures/simple.yml example_post")
+	// Start test server
+	server := httptest.NewUnstartedServer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, "it works")
+		}))
+
+	server.Listener, _ = net.Listen("tcp", ":8080")
+	server.Start()
+	defer server.Close()
+
+	// Run yurl against the test server
+	yurl := startYurl("config/fixtures/simple.yml integration_test")
 	defer yurl.Close()
 
-	match, _ := yurl.ExpectRegex("request.Request") // FIXME: Placeholder
+	match, _ := yurl.ExpectRegex("it works")
 	expect.Equal(t, match, true)
 }

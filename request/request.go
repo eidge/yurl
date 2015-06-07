@@ -41,14 +41,14 @@ func (request *Request) Do() (*http.Response, error) {
 		return nil, err
 	}
 
-	req, err := request.httpRequest()
+	req, err := request.newHttpRequest()
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Could not create request: " + err.Error())
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Could not complete request: " + err.Error())
 	}
 
 	return resp, nil
@@ -82,7 +82,7 @@ func (request Request) IsValid() (bool, error) {
 	}
 }
 
-func (request *Request) httpRequest() (*http.Request, error) {
+func (request *Request) newHttpRequest() (*http.Request, error) {
 	body, err := request.parseBody()
 	if err != nil {
 		return nil, err

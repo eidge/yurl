@@ -1,9 +1,13 @@
 globals:
-  base_url: https://example.com
+  base_url: http://localhost:8080
   headers: # headers to include for every request in this file
     AUTHENTICATION_TOKEN: "123456"
 
 requests:
+  integration_test:
+    path: /
+    method: GET
+
   example_post: # yurl users_endpoint create_user
     path: /example_endpoint
     method: POST
