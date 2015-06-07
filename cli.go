@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	"github.com/eidge/yurl/config"
+	"github.com/eidge/yurl/response_formatter"
 	"os"
 )
 
@@ -34,9 +35,14 @@ func actionMakeRequest(c *cli.Context) {
 
 		// Find and make request
 		requestName := c.Args()[1]
-		requestConfig, ok := requests[requestName]
+		request, ok := requests[requestName]
 		if ok {
-			fmt.Printf("%#v", requestConfig)
+			resp, err := request.Do()
+			if err != nil {
+				fmt.Printf("%v", err)
+				os.Exit(-1)
+			}
+			responseFormatter.Print(resp)
 		} else {
 			fmt.Printf("Request %s not found in %s\n", requestName, filename)
 			os.Exit(-1)
