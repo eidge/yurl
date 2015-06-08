@@ -34,10 +34,14 @@ func TestYurlWithNoArgs(t *testing.T) {
 }
 
 func TestYurlWithoutRequestName(t *testing.T) {
-	yurl := startYurl("some_yaml")
+	yurl := startYurl("config/fixtures/simple.yml")
 	defer yurl.Close()
 
-	match, _ := yurl.ExpectRegex("No request provided")
+	match, _ := yurl.ExpectRegex("Requests in")
+	expect.Equal(t, match, true)
+	match, _ = yurl.ExpectRegex("example_post")
+	expect.Equal(t, match, true)
+	match, _ = yurl.ExpectRegex("example_get")
 	expect.Equal(t, match, true)
 }
 

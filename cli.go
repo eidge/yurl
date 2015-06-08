@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	"github.com/eidge/yurl/config"
+	"github.com/eidge/yurl/request"
 	"github.com/eidge/yurl/response_formatter"
 	"os"
 )
@@ -21,34 +22,39 @@ func newApp() *cli.App {
 }
 
 func actionMakeRequest(c *cli.Context) {
-	if len(c.Args()) == 1 {
-		fmt.Printf("No request provided. \n\n")
+	if len(c.Args()) == 0 {
 		cli.ShowAppHelp(c)
-	} else if len(c.Args()) > 1 {
-		// Read config file
-		filename := c.Args()[0]
-		requests, err := config.RequestsFromYaml(filename)
-		if err != nil {
-			fmt.Printf("%s\n", err)
-			os.Exit(-1)
-		}
+		return
+	}
 
-		// Find and make request
-		requestName := c.Args()[1]
-		request, ok := requests[requestName]
-		if ok {
-			resp, err := request.Do()
-			if err != nil {
-				fmt.Printf("%v", err)
-				os.Exit(-1)
-			}
-			responseFormatter.Print(resp)
-		} else {
-			fmt.Printf("Request %s not found in %s\n", requestName, filename)
+	// Read config file
+	filename := c.Args()[0]
+	requests, err := config.RequestsFromYaml(filename)
+	if err != nil {
+		fmt.Printf("%s\n", err)
+		os.Exit(-1)
+	}
+
+	// List requests if no request is provided
+	if len(c.Args()) == 1 {
+		fmt.Printf("Requests in %s:\n", filename)
+		printRequestList(requests)
+		return
+	}
+
+	// Find and make request
+	requestName := c.Args()[1]
+	request, ok := requests[requestName]
+	if ok {
+		resp, err := request.Do()
+		if err != nil {
+			fmt.Printf("%v", err)
 			os.Exit(-1)
 		}
+		responseFormatter.Print(resp)
 	} else {
-		cli.ShowAppHelp(c)
+		fmt.Printf("Request %s not found in %s\n", requestName, filename)
+		os.Exit(-1)
 	}
 }
 
@@ -67,4 +73,10 @@ func appHelpTemplate() string {
   COMMANDS:
   	{{range .Commands}}{{join .Names ", "}}{{ "\t" }}{{.Usage}}
   	{{end}}{{if .Flags}}{{end}}`
+}
+
+func printRequestList(requests map[string]request.Request) {
+	for requestName, request := range requests {
+		fmt.Printf("  %s\t%s\n", request.Method, requestName)
+	}
 }

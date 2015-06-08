@@ -25,7 +25,7 @@ func TestRequestsFromYamlParsesYamlFile(t *testing.T) {
 	requests := readYaml(t, "./fixtures/simple.yml")
 
 	// Requests
-	expect.Equal(t, len(requests), 4)
+	expect.Equal(t, len(requests), 5)
 
 	expect.Equal(t, requests["example_post"].Path, "/example_endpoint")
 	expect.Equal(t, requests["example_post"].Method, "POST")
@@ -48,7 +48,7 @@ func TestRequestsFromYamlSetsConfigurationFromGlobals(t *testing.T) {
 	requests := readYaml(t, "./fixtures/simple.yml")
 	request := requests["example_post"]
 
-	expect.Equal(t, request.BaseUrl, "https://example.com")
+	expect.Equal(t, request.BaseUrl, "http://localhost:8080")
 	expect.DeepEqual(t, request.Headers, map[string]string{"AUTHENTICATION_TOKEN": "123456"})
 }
 
@@ -58,7 +58,7 @@ func TestRequestsFromYamlSetsUrlFromBaseUrlAndPath(t *testing.T) {
 	requestWithoutUrl := requests["example_post"]
 
 	expect.Equal(t, requestWithUrl.Url, "https://test.example.com/example_endpoint_2")
-	expect.Equal(t, requestWithoutUrl.Url, "https://example.com/example_endpoint")
+	expect.Equal(t, requestWithoutUrl.Url, "http://localhost:8080/example_endpoint")
 }
 
 func TestHeadersAreMergedWithGlobalsHeaders(t *testing.T) {
